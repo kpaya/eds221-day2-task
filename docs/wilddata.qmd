@@ -1,0 +1,75 @@
+---
+title: "Wild Data"
+author: "Karol Paya"
+execute: 
+  warning: false
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#Load Libraries
+library(tidyverse)
+library(here)
+library(janitor)
+```
+
+```{r}
+mack_verts<-read_csv(here("data", "AS00601.csv"))
+view(mack_verts)
+
+mack_verts <- clean_names(mack_verts) 
+view(mack_verts)
+
+mack_verts$year
+mack_verts$pass
+```
+
+```{r}
+#Store the 5th value in column “WEIGHT” as mc_wt_5. Check by looking at your data frame to confirm.
+
+mc_wt_5<-mack_verts$weight[5]
+mc_wt_5
+
+#Store the 8th - 20th value in the “LENGTH1” column as mc_length_8_20. Check by looking at your data frame to confirm.
+mc_length_8_20<-mack_verts$length1[8:20]
+mc_length_8_20
+
+#Store everything in column SAMPLEDATE as a vector called mc_dates
+mc_dates<-mack_verts$sampledate
+mc_dates
+
+#Create a subset that only contains observations for Pacific Giant Salamanders (species Dicamptodon tenebrosus, stored in species as DITE). Store the subset as mc_salamanders. Hint: see dplyr::filter()!
+mc_salamanders <- filter(mack_verts, species == "DITE")
+view(mc_salamanders)
+
+#Create a scatterplot of length1 (snout-vent length in millimeters) versus weight (grams) for all salamanders in the subset you created above, mc_salamanders. Update axis labels, title, subtitle, and add a caption with the data source. Customize point color and size, possibly opacity, and theme.
+
+mc_salamanders_plot <- ggplot(data = mc_salamanders, aes(x =length1 , y = weight)) + 
+  geom_point(alpha=0.5, color="red") +
+  labs(title = "Salamanders Snout-vent Length Vs. Weight",
+       x ="Snout-vent length (mm)" ,
+       y = "Weight (g)")
+  
+mc_salamanders_plot
+
+ggsave(here::here("figs", "salamander_size.png"), height = 6, width = 5)
+
+```
+
+
+```{r}
+mc_trout<-filter(mack_verts, species == "ONCL")
+
+mc_trout_plot <- ggplot(data = mc_trout, aes(x =length1 , y = weight, color=reach)) + 
+  geom_point(alpha=0.5) + facet_wrap(~reach)+
+  scale_color_manual(values =  c("Red","Blue","Green")) +
+  labs(title = "Trout Snout-Vent Length Vs. Weight",
+       x ="Snout-vent length (mm)" ,
+       y = "Weight (g)")
+  
+mc_trout_plot
+
+ggsave(here::here("figs", "mc_trout_plot.png"), height = 6, width = 5)
+```
+
